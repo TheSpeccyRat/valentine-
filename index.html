@@ -170,19 +170,12 @@
         }
 
         function dodge() {
-            // Once interacted with, the button becomes absolute to allow free movement
             noBtn.style.position = 'absolute';
-            
             const card = document.querySelector('.main-card');
             const rect = card.getBoundingClientRect();
-            
-            // Generate coordinates within the safe zone of the card
             const x = (Math.random() - 0.5) * (rect.width - 140);
             const y = (Math.random() - 0.5) * (rect.height - 180);
-            
             noBtn.style.transform = `translate(${x}px, ${y}px)`;
-            
-            // Slightly grow the "Yes" button with every attempt to hit "No"
             yesScale += 0.15;
             yesBtn.style.transform = `scale(${yesScale})`;
         }
@@ -193,8 +186,6 @@
                 s2.classList.add('hidden');
                 succ.classList.remove('hidden');
                 succ.classList.add('fade-in');
-                
-                // Trigger celebratory petal animation
                 for(let i=0; i<35; i++) {
                     dropPetal();
                 }
