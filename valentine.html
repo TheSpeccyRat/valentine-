@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Note For You</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --soft-pink: #fef8f9;
+            --rose-accent: #e5b9bc;
+            --deep-rose: #8a6a6c;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--soft-pink);
+            color: var(--deep-rose);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100dvh;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .main-card {
+            background: var(--white);
+            width: 90%;
+            max-width: 360px;
+            padding: 4.5rem 2rem;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(229, 185, 188, 0.12);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            border: 1px solid rgba(229, 185, 188, 0.1);
+        }
+
+        .button-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            height: 60px;
+            margin-top: 2rem;
+        }
+
+        .btn-base {
+            height: 46px;
+            width: 110px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            flex-shrink: 0;
+            font-weight: 400;
+        }
+
+        .btn-primary {
+            background-color: var(--rose-accent);
+            color: white;
+            box-shadow: 0 4px 15px rgba(229, 185, 188, 0.3);
+            border: none;
+            z-index: 2;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--rose-accent);
+            color: var(--rose-accent);
+            z-index: 1;
+        }
+
+        .heart-icon {
+            width: 28px;
+            height: 28px;
+            margin: 0 auto 2rem;
+            fill: var(--rose-accent);
+            opacity: 0.7;
+        }
+
+        .fade-in {
+            animation: fadeIn 1.2s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(229, 185, 188, 0.2) 0%, rgba(254, 248, 249, 0) 70%);
+            filter: blur(40px);
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Aesthetic background elements -->
+    <div class="bg-glow" style="top: -10%; left: -10%;"></div>
+    <div class="bg-glow" style="bottom: -10%; right: -10%;"></div>
+
+    <main class="main-card fade-in">
+        <!-- Stage 1: Entrance -->
+        <div id="stage-1">
+            <svg class="heart-icon" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <h1 class="serif text-4xl mb-2 font-light">Just a niche statement 😭</h1>
+            <p class="text-[10px] uppercase tracking-[0.4em] opacity-40 mb-12">Coz why not?</p>
+            <button onclick="toStage2()" class="btn-base btn-primary mx-auto">Open</button>
+        </div>
+
+        <!-- Stage 2: The Question -->
+        <div id="stage-2" class="hidden">
+            <h2 class="serif text-3xl mb-12">Will you be my Valentine?</h2>
+            <div class="button-container">
+                <button id="yesBtn" onclick="toSuccess()" class="btn-base btn-primary">Yes</button>
+                <button id="noBtn" onmouseover="dodge()" onclick="dodge()" class="btn-base btn-secondary">No</button>
+            </div>
+        </div>
+
+        <!-- Stage 3: Success Message -->
+        <div id="success" class="hidden">
+            <h1 class="serif text-4xl mb-4">Thanks Lottie</h1>
+            <p class="text-[10px] uppercase tracking-[0.4em] opacity-40">You are the best! </p>
+             <p class="text-[10px] uppercase tracking-[0.4em] opacity-40">Love from Doug x </p>
+        </div>
+    </main>
+
+    <script>
+        const s1 = document.getElementById('stage-1');
+        const s2 = document.getElementById('stage-2');
+        const succ = document.getElementById('success');
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+
+        let yesScale = 1;
+
+        function toStage2() {
+            s1.style.opacity = '0';
+            setTimeout(() => {
+                s1.classList.add('hidden');
+                s2.classList.remove('hidden');
+                s2.classList.add('fade-in');
+            }, 400);
+        }
+
+        function dodge() {
+            // Once interacted with, the button becomes absolute to allow free movement
+            noBtn.style.position = 'absolute';
+            
+            const card = document.querySelector('.main-card');
+            const rect = card.getBoundingClientRect();
+            
+            // Generate coordinates within the safe zone of the card
+            const x = (Math.random() - 0.5) * (rect.width - 140);
+            const y = (Math.random() - 0.5) * (rect.height - 180);
+            
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
+            
+            // Slightly grow the "Yes" button with every attempt to hit "No"
+            yesScale += 0.15;
+            yesBtn.style.transform = `scale(${yesScale})`;
+        }
+
+        function toSuccess() {
+            s2.style.opacity = '0';
+            setTimeout(() => {
+                s2.classList.add('hidden');
+                succ.classList.remove('hidden');
+                succ.classList.add('fade-in');
+                
+                // Trigger celebratory petal animation
+                for(let i=0; i<35; i++) {
+                    dropPetal();
+                }
+            }, 400);
+        }
+
+        function dropPetal() {
+            const p = document.createElement('div');
+            p.style.position = 'fixed';
+            p.style.width = '6px';
+            p.style.height = '6px';
+            p.style.background = '#e5b9bc';
+            p.style.borderRadius = '50% 0 50% 0';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.top = '-10px';
+            p.style.opacity = Math.random();
+            p.style.zIndex = '5';
+            document.body.appendChild(p);
+
+            const duration = Math.random() * 3000 + 2000;
+            const animation = p.animate([
+                { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                { transform: `translateY(110vh) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+            ], { 
+                duration: duration, 
+                easing: 'ease-in' 
+            });
+
+            animation.onfinish = () => p.remove();
+        }
+    </script>
+</body>
+</html>
