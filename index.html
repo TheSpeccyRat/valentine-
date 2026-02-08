@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>A Note For You</title>
-    <!-- Favicon: Heart Icon for Browser Tabs -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❤️</text></svg>">
+    <link rel="icon" href="data:image/svg+xml;charset=utf-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❤️</text></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --soft-pink: #fef8f9;
+            --soft-pink: #fffcfd;
             --rose-accent: #e5b9bc;
-            --deep-rose: #8a6a6c;
+            --rose-dark: #d4a3a7;
+            --deep-rose: #7a5a5c;
             --white: #ffffff;
+            --envelope-color: #f7e1e3;
+            --envelope-flap: #eec9cc;
         }
 
         body {
@@ -30,191 +32,349 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        .serif {
-            font-family: 'Cormorant Garamond', serif;
+        .serif { font-family: 'Cormorant Garamond', serif; }
+
+        /* Background Decoration */
+        .bg-glow {
+            position: fixed;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(229, 185, 188, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+            filter: blur(60px);
+            z-index: -1;
+            pointer-events: none;
         }
 
-        .main-card {
-            background: var(--white);
-            width: 90%;
-            max-width: 360px;
-            padding: 4.5rem 2rem;
-            border-radius: 50px;
-            box-shadow: 0 10px 40px rgba(229, 185, 188, 0.12);
+        /* Gate Styles */
+        .gate-container {
             text-align: center;
-            position: relative;
+            width: 90%;
+            max-width: 340px;
             z-index: 10;
-            border: 1px solid rgba(229, 185, 188, 0.1);
         }
 
-        .button-container {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
+        .input-field {
             width: 100%;
-            height: 60px;
-            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(229, 185, 188, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            outline: none;
+            transition: all 0.3s ease;
+            color: var(--deep-rose);
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--rose-accent);
+            background: white;
+            box-shadow: 0 4px 12px rgba(229, 185, 188, 0.1);
+        }
+
+        /* Re-designed Envelope */
+        .envelope-wrapper {
+            perspective: 1000px;
+            z-index: 50;
+        }
+
+        .envelope {
+            position: relative;
+            width: 280px;
+            height: 180px;
+            background: var(--envelope-color);
+            border-radius: 0 0 40px 40px;
+            box-shadow: 0 15px 35px rgba(122, 90, 92, 0.1);
+            cursor: pointer;
+            transition: transform 0.5s ease;
+            transform-style: preserve-3d;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 110px;
+            background: var(--envelope-flap);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            border-radius: 40px 40px 0 0;
+            transform-origin: top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 3;
+            backface-visibility: hidden;
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .pocket {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--envelope-color);
+            border-radius: 0 0 40px 40px;
+            z-index: 2;
+        }
+
+        .letter-small {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            height: 80%;
+            background: white;
+            border-radius: 20px;
+            z-index: 1;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .envelope.open .letter-small {
+            transform: translate(-50%, -100px);
+        }
+
+        /* Main Card Refinement */
+        .main-card {
+            background: white;
+            width: 92%;
+            max-width: 360px;
+            padding: 4rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 20px 60px rgba(122, 90, 92, 0.08);
+            text-align: center;
+            border: 1px solid rgba(229, 185, 188, 0.15);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-base {
-            height: 46px;
-            width: 110px;
+            height: 48px;
+            width: 120px;
             border-radius: 100px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             letter-spacing: 0.15em;
             text-transform: uppercase;
-            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-weight: 500;
+            border: none;
             user-select: none;
-            flex-shrink: 0;
-            font-weight: 400;
+            touch-action: manipulation;
         }
 
         .btn-primary {
-            background-color: var(--rose-accent);
+            background: var(--rose-accent);
             color: white;
             box-shadow: 0 4px 15px rgba(229, 185, 188, 0.3);
-            border: none;
-            z-index: 2;
         }
 
         .btn-secondary {
-            background-color: transparent;
-            border: 1px solid var(--rose-accent);
+            background: transparent;
+            border: 1.5px solid var(--rose-accent);
             color: var(--rose-accent);
-            z-index: 1;
         }
 
-        .heart-icon {
-            width: 28px;
-            height: 28px;
-            margin: 0 auto 2rem;
-            fill: var(--rose-accent);
-            opacity: 0.7;
+        /* Animations */
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
         }
 
-        .fade-in {
-            animation: fadeIn 1.2s ease-out forwards;
-        }
+        #noBtn { transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); z-index: 20; }
+        #yesBtn { z-index: 21; position: relative; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .bg-glow {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(229, 185, 188, 0.2) 0%, rgba(254, 248, 249, 0) 70%);
-            filter: blur(40px);
-            z-index: 1;
-        }
     </style>
 </head>
 <body>
-
-    <!-- Aesthetic background elements -->
     <div class="bg-glow" style="top: -10%; left: -10%;"></div>
     <div class="bg-glow" style="bottom: -10%; right: -10%;"></div>
 
-    <main class="main-card fade-in">
-        <!-- Stage 1: Entrance -->
-        <div id="stage-1">
-            <svg class="heart-icon" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-            <h1 class="serif text-4xl mb-2 font-light">Just a niche statement 😭</h1>
-            <p class="text-[10px] uppercase tracking-[0.4em] opacity-40 mb-12">Coz why not?</p>
-            <button onclick="toStage2()" class="btn-base btn-primary mx-auto">Open</button>
-        </div>
+    <!-- 1. DATE GATE -->
+    <div id="date-gate" class="gate-container fade-in">
+        <h2 class="serif text-2xl mb-8 font-light italic leading-snug">What was the date you asked me out?</h2>
+        <input type="date" id="date-input" class="input-field serif text-lg">
+        <button onclick="checkDate()" class="btn-base btn-primary mx-auto">Continue</button>
+        <p id="date-error" class="text-[10px] mt-6 text-rose-300 opacity-0 transition-opacity duration-300 uppercase tracking-widest">Incorrect Date</p>
+    </div>
 
-        <!-- Stage 2: The Question -->
-        <div id="stage-2" class="hidden">
-            <h2 class="serif text-3xl mb-12">Will you be my Valentine?</h2>
-            <div class="button-container">
-                <button id="yesBtn" onclick="toSuccess()" class="btn-base btn-primary">Yes</button>
-                <button id="noBtn" onmouseover="dodge()" onclick="dodge()" class="btn-base btn-secondary">No</button>
+    <!-- 2. ENVELOPE SECTION -->
+    <div id="envelope-section" class="hidden w-full flex justify-center px-4">
+        <div class="envelope-wrapper">
+            <div class="envelope" id="mail-box" onclick="openEnvelope()">
+                <div class="envelope-flap"></div>
+                <div class="pocket"></div>
+                <div class="letter-small">
+                    <div class="w-6 h-px bg-rose-100 mb-2"></div>
+                    <p class="serif italic text-[10px] text-rose-300 uppercase tracking-widest">Open</p>
+                    <div class="w-6 h-px bg-rose-100 mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. THE MAIN CONTENT -->
+    <main id="main-content" class="main-card hidden">
+        <div id="stage-1" class="space-y-6">
+            <div class="flex justify-center mb-6">
+                <div class="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center">
+                    <svg class="w-5 h-5 fill-rose-300" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+            </div>
+            <h1 class="serif text-3xl leading-tight font-light">Just a niche statement 😭</h1>
+            <p class="text-[9px] uppercase tracking-[0.4em] text-rose-300 font-medium">Confidential Note</p>
+            <div class="pt-8">
+                <button onclick="toStage2()" class="btn-base btn-primary mx-auto">Read Now</button>
             </div>
         </div>
 
-        <!-- Stage 3: Success Message -->
-        <div id="success" class="hidden">
-            <h1 class="serif text-4xl mb-4">Thanks Lottie</h1>
-            <p class="text-[10px] uppercase tracking-[0.4em] opacity-40">You are the best! </p>
-             <p class="text-[10px] uppercase tracking-[0.4em] opacity-40">Love from Doug x </p>
+        <div id="stage-2" class="hidden space-y-10">
+            <h2 class="serif text-3xl font-light italic leading-snug">Will you be my Valentine?</h2>
+            <div id="btn-container" class="flex flex-col sm:flex-row justify-center gap-4 items-center min-h-[160px] relative">
+                <button id="yesBtn" onclick="toSuccess()" class="btn-base btn-primary">Yes</button>
+                <button id="noBtn" onmouseover="dodge()" ontouchstart="dodge()" class="btn-base btn-secondary">No</button>
+            </div>
+        </div>
+
+        <div id="success" class="hidden space-y-4">
+            <h1 class="serif text-3xl font-light">Thanks Lottie</h1>
+            <div class="py-4">
+                <p class="text-[9px] uppercase tracking-[0.4em] text-rose-300 mb-2">You are the best!</p>
+                <p class="text-[9px] uppercase tracking-[0.4em] text-rose-400 font-semibold italic">Love from Doug x</p>
+            </div>
         </div>
     </main>
 
     <script>
-        const s1 = document.getElementById('stage-1');
-        const s2 = document.getElementById('stage-2');
-        const succ = document.getElementById('success');
-        const noBtn = document.getElementById('noBtn');
-        const yesBtn = document.getElementById('yesBtn');
-
+        const CORRECT_DATE = "2026-02-05";
         let yesScale = 1;
 
+        window.onload = () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date-input').value = today;
+        };
+
+        function checkDate() {
+            const val = document.getElementById('date-input').value;
+            const errorMsg = document.getElementById('date-error');
+            if (val === CORRECT_DATE) {
+                document.getElementById('date-gate').classList.add('hidden');
+                document.getElementById('envelope-section').classList.remove('hidden');
+                document.getElementById('envelope-section').classList.add('fade-in');
+            } else {
+                errorMsg.style.opacity = '1';
+                setTimeout(() => errorMsg.style.opacity = '0', 2000);
+            }
+        }
+
+        function openEnvelope() {
+            const env = document.getElementById('mail-box');
+            if (env.classList.contains('open')) return;
+            
+            env.classList.add('open');
+            
+            // Sequence: Flap opens -> Letter rises -> Card fades in
+            setTimeout(() => {
+                document.getElementById('envelope-section').style.opacity = '0';
+                document.getElementById('envelope-section').style.transition = 'opacity 0.6s ease';
+                
+                setTimeout(() => {
+                    document.getElementById('envelope-section').classList.add('hidden');
+                    const mainContent = document.getElementById('main-content');
+                    mainContent.classList.remove('hidden');
+                    mainContent.classList.add('fade-in');
+                }, 600);
+            }, 1800);
+        }
+
         function toStage2() {
+            const s1 = document.getElementById('stage-1');
+            const s2 = document.getElementById('stage-2');
             s1.style.opacity = '0';
+            s1.style.transition = 'opacity 0.3s ease';
+            
             setTimeout(() => {
                 s1.classList.add('hidden');
                 s2.classList.remove('hidden');
                 s2.classList.add('fade-in');
-            }, 400);
+            }, 300);
         }
 
         function dodge() {
-            noBtn.style.position = 'absolute';
+            const btn = document.getElementById('noBtn');
             const card = document.querySelector('.main-card');
             const rect = card.getBoundingClientRect();
-            const x = (Math.random() - 0.5) * (rect.width - 140);
-            const y = (Math.random() - 0.5) * (rect.height - 180);
-            noBtn.style.transform = `translate(${x}px, ${y}px)`;
-            yesScale += 0.15;
-            yesBtn.style.transform = `scale(${yesScale})`;
+            
+            btn.style.position = 'absolute';
+            
+            const rangeX = rect.width * 0.7;
+            const rangeY = rect.height * 0.5;
+            
+            const x = (Math.random() - 0.5) * rangeX;
+            const y = (Math.random() - 0.5) * rangeY;
+            
+            btn.style.transform = `translate(${x}px, ${y}px)`;
+            
+            yesScale += 0.2;
+            document.getElementById('yesBtn').style.transform = `scale(${yesScale})`;
         }
 
         function toSuccess() {
+            const s2 = document.getElementById('stage-2');
+            const succ = document.getElementById('success');
             s2.style.opacity = '0';
+            s2.style.transition = 'opacity 0.3s ease';
+            
             setTimeout(() => {
                 s2.classList.add('hidden');
                 succ.classList.remove('hidden');
                 succ.classList.add('fade-in');
+                
                 for(let i=0; i<35; i++) {
-                    dropPetal();
+                    setTimeout(dropPetal, i * 50);
                 }
-            }, 400);
+                setInterval(dropPetal, 600);
+            }, 300);
         }
 
         function dropPetal() {
             const p = document.createElement('div');
+            const symbols = ["🌸", "❤️", "✨"];
+            p.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
             p.style.position = 'fixed';
-            p.style.width = '6px';
-            p.style.height = '6px';
-            p.style.background = '#e5b9bc';
-            p.style.borderRadius = '50% 0 50% 0';
             p.style.left = Math.random() * 100 + 'vw';
-            p.style.top = '-10px';
-            p.style.opacity = Math.random();
-            p.style.zIndex = '5';
+            p.style.top = '-20px';
+            p.style.fontSize = (Math.random() * 10 + 12) + 'px';
+            p.style.userSelect = 'none';
+            p.style.pointerEvents = 'none';
+            p.style.zIndex = '100';
             document.body.appendChild(p);
 
-            const duration = Math.random() * 3000 + 2000;
-            const animation = p.animate([
-                { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
-                { transform: `translateY(110vh) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+            p.animate([
+                { transform: 'translateY(0) rotate(0) translateX(0)', opacity: 1 },
+                { transform: `translateY(110vh) rotate(${Math.random() * 360}deg) translateX(${(Math.random() - 0.5) * 60}px)`, opacity: 0 }
             ], { 
-                duration: duration, 
+                duration: 4000 + Math.random() * 2000,
                 easing: 'ease-in' 
-            });
-
-            animation.onfinish = () => p.remove();
+            }).onfinish = () => p.remove();
         }
     </script>
 </body>
